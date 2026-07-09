@@ -15,7 +15,7 @@ ok(morph.includes('mods = <(MOD_LSFT|MOD_RSFT)>;'), 'mod-morph mods OR-combined'
 const ht = E.behaviorNode({ name: 'hm', type: 'hold-tap', bindings: ['&kp', '&kp'], flavor: 'balanced', tappingTermMs: 180 });
 ok(ht.includes('#binding-cells = <2>;') && ht.includes('flavor = "balanced";') && ht.includes('tapping-term-ms = <180>;'), 'hold-tap props');
 
-console.log('addBehavior — into existing behaviors{}:');
+console.log('addBehavior - into existing behaviors{}:');
 const WITH = `/ {
     behaviors {
         existing: existing {
@@ -40,10 +40,10 @@ ok(out1.indexOf('comma_dot') < out1.indexOf('keymap {'), 'inserted inside behavi
 ok(out1.includes('existing: existing {'), 'existing behaviour preserved');
 eq(E.parseKeymap(out1).layers.length, 1, 'keymap layers unaffected (still 1)');
 eq(E.parseKeymap(out1).layers[0].tokens.length, 3, 'layer key count unaffected (3)');
-// round-trip: addBehavior only INSERTS — removing the inserted node yields the original.
-eq(out1.replace(E.behaviorNode(spec1) + '\n', ''), WITH, 'pure insertion — original text preserved exactly');
+// round-trip: addBehavior only INSERTS - removing the inserted node yields the original.
+eq(out1.replace(E.behaviorNode(spec1) + '\n', ''), WITH, 'pure insertion - original text preserved exactly');
 
-console.log('addBehavior — when no behaviors{} exists (create one in root):');
+console.log('addBehavior - when no behaviors{} exists (create one in root):');
 const WITHOUT = `/ {
     keymap {
         compatible = "zmk,keymap";
@@ -64,4 +64,4 @@ ok(E.behaviorNameError(m1, 'has space'), 'rejects name with space');
 ok(E.behaviorNameError(m1, 'existing'), 'detects clash with existing label');
 eq(E.behaviorNameError(m1, 'comma_dot'), null, 'accepts a fresh valid name');
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

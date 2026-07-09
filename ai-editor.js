@@ -139,11 +139,11 @@
     aN.filter(n => !bN.includes(n)).forEach(n => lines.push(`− Deleted layer “${n}”`));
     const common = aN.filter(n => bN.includes(n));
     const aOrd = common.map(n => aN.indexOf(n)), bOrd = common.map(n => bN.indexOf(n));
-    if (JSON.stringify(aOrd) !== JSON.stringify(bOrd)) lines.push(`↕ Reordered layers → ${bN.join(', ')}`);
+    if (JSON.stringify(aOrd) !== JSON.stringify(bOrd)) lines.push(`↕ Reordered layers -> ${bN.join(', ')}`);
     common.forEach(n => {
       const at = KeymapEngine.layerBindings(A, aN.indexOf(n)), bt = KeymapEngine.layerBindings(B, bN.indexOf(n));
       const len = Math.max(at.length, bt.length);
-      for (let i = 0; i < len; i++) if (at[i] !== bt[i]) lines.push(`• ${n} · pos ${i}: ${at[i] || '—'} → ${bt[i] || '—'}`);
+      for (let i = 0; i < len; i++) if (at[i] !== bt[i]) lines.push(`• ${n} · pos ${i}: ${at[i] || '-'} -> ${bt[i] || '-'}`);
     });
     try {
       const ca = KeymapEngine.parseCombos(A).combos, cb = KeymapEngine.parseCombos(B).combos;
@@ -169,7 +169,7 @@
       for (const tu of toolUses) {
         const r = executeTool(tu.name, tu.input, workingText);
         if (r.ok && r.newText != null) workingText = r.newText;
-        onLog('tool', `${tu.name}(${JSON.stringify(tu.input)}) → ${r.ok ? r.text : 'ERROR: ' + r.text}`);
+        onLog('tool', `${tu.name}(${JSON.stringify(tu.input)}) -> ${r.ok ? r.text : 'ERROR: ' + r.text}`);
         results.push({ id: tu.id, content: r.text });
       }
       driver.recordToolResults(results);

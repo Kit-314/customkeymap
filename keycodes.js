@@ -6,7 +6,7 @@
 (function (root) {
   'use strict';
 
-  // Letters A–Z
+  // Letters A-Z
   const letters = [];
   for (let i = 0; i < 26; i++) { const c = String.fromCharCode(65 + i); letters.push({ code: c, label: c, cat: 'Letters' }); }
 

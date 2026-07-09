@@ -287,6 +287,40 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
 #drop-overlay{display:none;position:fixed;inset:0;z-index:80;background:rgba(79,70,229,.10);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);align-items:center;justify-content:center;padding:40px}
 #drop-overlay.on{display:flex}
 .drop-card{border:2.5px dashed var(--accent);border-radius:20px;background:rgba(255,255,255,.92);color:var(--accent-d);font-size:18px;font-weight:700;padding:56px 78px;box-shadow:var(--shadow-lg);text-align:center}
+/* Keymap Doctor (feature CSS; later feature blocks go below this one) */
+.doc-badge{display:inline-block;min-width:17px;padding:0 5px;border-radius:9px;font-size:11px;font-weight:700;background:#16a34a;color:#fff;text-align:center}
+.doc-badge.warn{background:#d97706}
+.doc-badge.err{background:#dc2626}
+.doc-item{border-left:3px solid var(--border-strong);background:var(--surface-2);border-radius:8px;padding:9px 12px;margin:8px 0}
+.doc-item.error{border-left-color:#dc2626}
+.doc-item.warn{border-left-color:#d97706}
+.doc-item.info{border-left-color:#2563eb}
+.doc-item h4{margin:0 0 4px;font-size:13.5px}
+.doc-item p{margin:3px 0;font-size:12.5px;color:var(--text-soft)}
+.doc-item .doc-fix{font-size:12.5px;color:var(--text);margin-top:5px}
+.doc-item .doc-fix code{font-family:var(--mono);font-size:11.5px;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:1px 5px}
+.doc-sev{font-size:10.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;margin-right:7px}
+.doc-item.error .doc-sev{color:#dc2626}.doc-item.warn .doc-sev{color:#d97706}.doc-item.info .doc-sev{color:#2563eb}
+.doc-clean{padding:18px;text-align:center;color:var(--text-soft)}
+/* Cross-board porting */
+.bat-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;margin-bottom:10px}
+.bat-grid label{display:block;font-size:12px;color:var(--text-soft);margin-bottom:3px}
+.port-report{font-size:12.5px;margin:10px 0}
+.port-report .pr-good{color:#16a34a}
+.port-report .pr-warn{color:#d97706}
+.port-pre{font-family:var(--mono);font-size:11px;max-height:200px;overflow:auto;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px;white-space:pre}
+/* Share and embed */
+.share-row{display:flex;gap:8px;margin:6px 0 14px}
+.share-row input,.share-row textarea{flex:1;font-family:var(--mono);font-size:12px}
+/* embed mode (?embed=1): just the rendered keymap */
+body.embed header, body.embed .container>.card, body.embed #editor-bar,
+body.embed .site-footer, body.embed #legend {display:none !important}
+body.embed .container{padding:8px;margin:0;max-width:none}
+body.embed #out .lay-rename, body.embed #out .lay-del{display:none !important}
+/* Build firmware */
+.build-log{font-family:var(--mono);font-size:12px;background:var(--surface-2);border:1px solid var(--border);border-radius:8px;padding:10px;max-height:220px;overflow:auto;margin-top:10px}
+.build-log .ok{color:#16a34a}.build-log .bad{color:#dc2626}
+.build-art{display:flex;align-items:center;gap:8px;margin:6px 0}
 </style>
 </head>
 <body>
@@ -308,7 +342,7 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
   <span class="header-spacer"></span>
   <button class="theme-toggle" id="theme-toggle" onclick="toggleTheme()" title="Toggle dark mode" aria-label="Toggle dark mode">🌙</button>
   <span class="build-tag" title="Deployed build - confirms your browser has the latest version">build 2026-06-06·ar</span>
-  <button class="btn-s" id="feedback-btn" onclick="openFeedback()" style="display:none">💬 Feedback</button>
+  <button class="btn-s" id="feedback-btn" onclick="openFeedback()" style="display:none">Feedback</button>
   <button class="btn-s" onclick="openGlossary()">Behaviour guide</button>
 </header>
 
@@ -324,6 +358,10 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
       <button class="btn-s" id="btn-open" onclick="openLocalFile()">Open file…</button>
       <button class="btn-s" id="btn-svg" onclick="downloadKeymap('svg')" style="display:none">Export SVG</button>
       <button class="btn-s" id="btn-png" onclick="downloadKeymap('png')" style="display:none">Export PNG</button>
+      <button class="btn-s" id="btn-doctor" onclick="openDoctor()" style="display:none" title="Static analysis: combos, layers, hold-taps, dead keys">Doctor <span id="doctor-count" class="doc-badge">0</span></button>
+      <button class="btn-s" id="btn-port" onclick="openPort()" style="display:none" title="Port this keymap to a different board">Port</button>
+      <button class="btn-s" id="btn-share" onclick="openShare()" style="display:none" title="Permalink + embeddable snippet">Share</button>
+      <button class="btn-s" id="btn-build" onclick="openBuild()" style="display:none" title="Trigger the repo's GitHub Actions build and fetch the firmware">Build firmware</button>
     </div>
     <div class="gh-row">
       <input type="text" id="gh-input" class="gh-input" spellcheck="false"
@@ -348,8 +386,8 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
     <button class="btn-s" id="eb-beh" onclick="openBehaviorEditor()">＋ Behaviour</button>
     <button class="btn-s" id="eb-combo" onclick="openComboEditor()">＋ Combo</button>
     <button class="btn-s" id="eb-cond" onclick="addConditionalLayerUI()">＋ Cond. layer</button>
-    <button class="btn-s" id="eb-ai" onclick="openAIEditor()">✨ AI edit</button>
-    <button class="btn-s" id="eb-commit" onclick="openCommitModal()">⬆ Commit to GitHub</button>
+    <button class="btn-s" id="eb-ai" onclick="openAIEditor()">AI edit</button>
+    <button class="btn-s" id="eb-commit" onclick="openCommitModal()">Commit to GitHub</button>
     <button class="btn-s" id="eb-save" onclick="saveLocalFile()" style="display:none">Save</button>
     <button class="btn-p" id="eb-dl" onclick="downloadEditedKeymap()">Download .keymap</button>
     <span class="eb-hint" id="eb-hint">Click any key to change what it does.</span>
@@ -467,10 +505,77 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
   </div>
 </div>
 
+<!-- Keymap Doctor modal. -->
+<div class="modal-bg" id="doctormodal">
+  <div class="modal" style="width:min(680px,100%)">
+    <div class="modal-head"><h3>Keymap Doctor</h3><button class="x" onclick="closeDoctor()" aria-label="Close">×</button></div>
+    <div class="modal-body" id="doctor-body"></div>
+    <div class="modal-foot"><span class="preview" id="doctor-summary"></span><span class="btns"><button class="btn-p" onclick="closeDoctor()">Done</button></span></div>
+  </div>
+</div>
+
+<!-- Cross-board porting modal. -->
+<div class="modal-bg" id="portmodal">
+  <div class="modal" style="width:min(640px,100%)">
+    <div class="modal-head"><h3>Port to another board</h3><button class="x" onclick="closePort()" aria-label="Close">×</button></div>
+    <div class="modal-body">
+      <div class="bat-grid">
+        <div><label>This keymap's board</label><select id="port-src" onchange="portRecalc()"></select></div>
+        <div><label>Target board</label><select id="port-dst" onchange="portRecalc()"></select></div>
+      </div>
+      <div id="port-report" class="port-report"></div>
+      <div id="port-preview" class="port-pre" style="display:none"></div>
+    </div>
+    <div class="modal-foot"><span class="preview"></span><span class="btns">
+      <button class="btn-s" onclick="closePort()">Cancel</button>
+      <button class="btn-s" id="port-dl" onclick="portDownload()">Download .keymap</button>
+      <button class="btn-p" id="port-open" onclick="portApply()">Open in editor</button>
+    </span></div>
+  </div>
+</div>
+
+<!-- Share / embed modal. -->
+<div class="modal-bg" id="sharemodal">
+  <div class="modal" style="width:min(620px,100%)">
+    <div class="modal-head"><h3>Share this keymap</h3><button class="x" onclick="closeShare()" aria-label="Close">×</button></div>
+    <div class="modal-body">
+      <div id="share-unavailable" class="gh-hint" style="display:none">Sharing links work for keymaps loaded from GitHub (so the link can reload the same file). Load one via the GitHub box, or use Export SVG/PNG for a picture.</div>
+      <div id="share-avail">
+        <label>Permalink - opens this keymap, on this view</label>
+        <div class="share-row"><input id="share-link" readonly onclick="this.select()"><button class="btn-s" onclick="copyShare('share-link', this)">Copy</button></div>
+        <label>Markdown (README / Reddit)</label>
+        <div class="share-row"><input id="share-md" readonly onclick="this.select()"><button class="btn-s" onclick="copyShare('share-md', this)">Copy</button></div>
+        <label>Embed (iframe, chrome hidden)</label>
+        <div class="share-row"><textarea id="share-embed" readonly rows="3" onclick="this.select()"></textarea><button class="btn-s" onclick="copyShare('share-embed', this)">Copy</button></div>
+        <div class="gh-hint">For a picture instead, use <b>Export SVG/PNG</b> in the toolbar.</div>
+      </div>
+    </div>
+    <div class="modal-foot"><span class="preview"></span><span class="btns"><button class="btn-p" onclick="closeShare()">Done</button></span></div>
+  </div>
+</div>
+
+<!-- Build & fetch firmware modal. -->
+<div class="modal-bg" id="buildmodal">
+  <div class="modal" style="width:min(560px,100%)">
+    <div class="modal-head"><h3>Build firmware</h3><button class="x" onclick="closeBuild()" aria-label="Close">×</button></div>
+    <div class="modal-body">
+      <div class="ai-priv">🔒 Runs <b>your repo's own GitHub Actions workflow</b> - the build happens on GitHub, and the firmware downloads straight from there to your browser.</div>
+      <div id="build-target" class="gh-hint" style="margin:10px 0"></div>
+      <div id="build-status" class="commit-status"></div>
+      <div id="build-arts"></div>
+      <div id="build-log" class="build-log" style="display:none"></div>
+    </div>
+    <div class="modal-foot"><span class="preview"></span><span class="btns">
+      <button class="btn-s" onclick="closeBuild()">Close</button>
+      <button class="btn-p" id="build-go" onclick="buildFire()">Build</button>
+    </span></div>
+  </div>
+</div>
+
 <!-- Commit-to-GitHub modal. -->
 <div class="modal-bg" id="commitmodal">
   <div class="modal" style="width:min(520px,100%)">
-    <div class="modal-head"><h3>⬆ Commit to GitHub</h3><button class="x" onclick="closeCommitModal()" aria-label="Close">×</button></div>
+    <div class="modal-head"><h3>Commit to GitHub</h3><button class="x" onclick="closeCommitModal()" aria-label="Close">×</button></div>
     <div class="modal-body">
       <div class="ai-priv">🔒 Your edit is committed <b>directly from your browser</b> to your repo - the commit never passes through the server, which only holds the GitHub app secret used to sign you in.</div>
       <div id="commit-target" class="gh-hint" style="margin-bottom:12px"></div>
@@ -489,7 +594,7 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
 <!-- BYOK AI editor modal. -->
 <div class="modal-bg" id="aimodal">
   <div class="modal" style="width:min(620px,100%)">
-    <div class="modal-head"><h3>✨ AI edit <span class="ai-beta">BYOK</span></h3><button class="x" onclick="closeAIEditor()" aria-label="Close">×</button></div>
+    <div class="modal-head"><h3>AI edit <span class="ai-beta">BYOK</span></h3><button class="x" onclick="closeAIEditor()" aria-label="Close">×</button></div>
     <div class="modal-body">
       <div class="ai-priv">🔒 Your API key is sent <b>directly from your browser</b> to the provider you choose - it never touches the server. The AI can only change your keymap through the same safe editing tools you use by hand, and you’ll review a diff before anything is applied.</div>
       <div class="ai-row">
@@ -519,12 +624,14 @@ select:focus,.kc-search:focus{outline:none;border-color:var(--accent);box-shadow
 </div>
 
 <!-- Drag-and-drop overlay (shown while a file is dragged over the page). -->
-<div id="drop-overlay"><div class="drop-card">Drop a <b>.keymap</b> to load it — or an <b>info.json</b> to position the keys</div></div>
+<div id="drop-overlay"><div class="drop-card">Drop a <b>.keymap</b> to load it - or an <b>info.json</b> to position the keys</div></div>
 
 <script src="editor-engine.js"></script>
 <script src="keycodes.js"></script>
 <script src="layout-json.js"></script>
 <script src="ai-editor.js"></script>
+<script src="doctor.js"></script>
+<script src="port.js"></script>
 <script>
 /* Cloudflare Web Analytics - cookieless, no personal data, no consent banner needed.
    Paste the beacon token from the Cloudflare dashboard (Web Analytics → customkeymap.com).
@@ -770,7 +877,7 @@ const BUILTIN_CELLS = {
 let BINDING_CELLS = Object.assign({}, BUILTIN_CELLS);
 // Learn #binding-cells for custom hold-taps from the source. The case that
 // matters: a hold-tap whose tap parameter is itself a &phandle (e.g.
-// `&my_ht 7 &key_repeat`) — without this the inner & splits one key into two,
+// `&my_ht 7 &key_repeat`) - without this the inner & splits one key into two,
 // throwing off the per-layer key count and the geometry that depends on it.
 function parseBindingCells(text){
   const cells = Object.assign({}, BUILTIN_CELLS);
@@ -787,7 +894,7 @@ function parseBindingCells(text){
       const body=block.slice(cm.index+cm[0].length,j-1);
       const compatM=body.match(/compatible\s*=\s*"([^"]+)"/);
       const bcM=body.match(/#binding-cells\s*=\s*<\s*(\d+)\s*>/);
-      // A hold-tap is always 2-cell by definition — infer it even when the
+      // A hold-tap is always 2-cell by definition - infer it even when the
       // explicit #binding-cells comes from an un-expanded template macro.
       let n=null;
       if(compatM && /hold-tap/.test(compatM[1])) n=2;
@@ -1446,7 +1553,7 @@ async function scanRepoLayouts(src){
       .map(n=>n.path).slice(0, 15);
   // keymap-editor / QMK info.json geometry (Nick Coutsos' convention, used with his
   // blessing): a `<board>.json`, `info.json`, or `config/*.json` carrying a `layouts`
-  // map. Only the user's OWN repo is read — never his contrib catalogue. The dtsi/
+  // map. Only the user's OWN repo is read - never his contrib catalogue. The dtsi/
   // ZMK-native results above are appended first, so they win when both exist.
   const boardRe = src.board && new RegExp(`(^|/)${src.board.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')}\\.json$`,'i');
   const jsonCands = tree.filter(n => n.type==='blob' && /\.json$/i.test(n.path)
@@ -2066,7 +2173,10 @@ async function render(){
     h += renderEncoders(parseEncoders(text));
     h += renderMacros();
     out.innerHTML=h; out.style.display='block';
+    LAST_RENDER_TEXT = text; LAST_RENDER_LAYERS = layers; LAST_RENDER_COMBOS = combos;
     updateLegend(out);
+    updateDoctor();
+    updatePermalink();
     afterRender();
   }catch(e){
     errEl.textContent='Parse error: '+e.message; errEl.style.display='block'; console.error(e);
@@ -2100,6 +2210,9 @@ function updateLegend(outEl){
   const hasKeys = !!(outEl && outEl.querySelector('.key'));
   document.getElementById('btn-svg').style.display = hasKeys ? '' : 'none';
   document.getElementById('btn-png').style.display = hasKeys ? '' : 'none';
+  document.getElementById('btn-port').style.display = hasKeys ? '' : 'none';
+  document.getElementById('btn-share').style.display = hasKeys ? '' : 'none';
+  document.getElementById('btn-build').style.display = (hasKeys && LOADED_SRC) ? '' : 'none';
 }
 
 function clearAll(){
@@ -2109,9 +2222,293 @@ function clearAll(){
   document.getElementById('legend').style.display='none';
   document.getElementById('btn-svg').style.display='none';
   document.getElementById('btn-png').style.display='none';
+  document.getElementById('btn-doctor').style.display='none';
+  document.getElementById('btn-port').style.display='none';
+  document.getElementById('btn-share').style.display='none';
+  document.getElementById('btn-build').style.display='none';
+  LAST_RENDER_TEXT=''; LAST_RENDER_LAYERS=[]; LAST_RENDER_COMBOS=[];
   document.getElementById('editor-bar').classList.remove('on');
   clearFileHandle();
   EDIT_HISTORY=null; EDIT_MODEL=null; ACTIVE_LAYER=0; BOARD_FULL=false; BOARD_USER_SET=false;
+}
+
+// Feature batch (re-integrated). Shared render-capture globals live here; later
+// feature blocks (Share/Port/Build) should read LAST_RENDER_* rather than
+// re-declare them, and go below the Keymap Doctor block.
+var LAST_RENDER_TEXT='', LAST_RENDER_LAYERS=[], LAST_RENDER_COMBOS=[];
+
+// Keymap Doctor
+var DOCTOR_FINDINGS=[];
+function updateDoctor(){
+  const btn=document.getElementById('btn-doctor'), badge=document.getElementById('doctor-count');
+  try{
+    DOCTOR_FINDINGS=(window.KeymapDoctor && LAST_RENDER_LAYERS.length)
+      ? KeymapDoctor.diagnose(LAST_RENDER_TEXT, LAST_RENDER_LAYERS) : [];
+  }catch(e){ console.warn('doctor failed', e); DOCTOR_FINDINGS=[]; }
+  const errs=DOCTOR_FINDINGS.filter(f=>f.severity==='error').length;
+  const warns=DOCTOR_FINDINGS.filter(f=>f.severity==='warn').length;
+  badge.textContent=String(DOCTOR_FINDINGS.length);
+  badge.className='doc-badge'+(errs?' err':warns?' warn':'');
+  btn.style.display=LAST_RENDER_LAYERS.length?'':'none';
+}
+function escFix(s){ return esc(s).replace(/`([^`]+)`/g,'<code>$1</code>'); }
+function openDoctor(){
+  const el=document.getElementById('doctor-body');
+  if(!DOCTOR_FINDINGS.length){
+    el.innerHTML='<div class="doc-clean">✓ Clean bill of health - combos gated, layers reachable, every reference resolves.</div>';
+    document.getElementById('doctor-summary').textContent='';
+  }else{
+    el.innerHTML=DOCTOR_FINDINGS.map(f=>
+      `<div class="doc-item ${f.severity}"><h4><span class="doc-sev">${f.severity}</span>${esc(f.title)}</h4>`+
+      `<p>${esc(f.detail)}</p>${f.fix?`<div class="doc-fix">Fix: ${escFix(f.fix)}</div>`:''}</div>`).join('');
+    const c={error:0,warn:0,info:0}; DOCTOR_FINDINGS.forEach(f=>c[f.severity]++);
+    document.getElementById('doctor-summary').textContent=
+      `${c.error} error${c.error!==1?'s':''} · ${c.warn} warning${c.warn!==1?'s':''} · ${c.info} info`;
+  }
+  document.getElementById('doctormodal').classList.add('on');
+}
+function closeDoctor(){ document.getElementById('doctormodal').classList.remove('on'); }
+
+// Cross-board porting
+var PORT_STATE=null;
+function openPort(){
+  if(!LAST_RENDER_LAYERS.length){ alert('Render a keymap first.'); return; }
+  const n=LAST_RENDER_LAYERS[0].bindings.length;
+  const opts=Object.entries(KeymapPort.BOARDS)
+    .map(([id,b])=>`<option value="${id}">${esc(b.label)}</option>`).join('');
+  const srcSel=document.getElementById('port-src'), dstSel=document.getElementById('port-dst');
+  srcSel.innerHTML=opts; dstSel.innerHTML=opts;
+  const guess=Object.entries(KeymapPort.BOARDS).find(([,b])=>b.total===n);
+  if(guess) srcSel.value=guess[0];
+  dstSel.value=(guess && guess[0]!=='ergoquill38') ? 'ergoquill38' : 'corne36';
+  portRecalc();
+  document.getElementById('portmodal').classList.add('on');
+}
+function closePort(){ document.getElementById('portmodal').classList.remove('on'); }
+function portRecalc(){
+  const srcId=document.getElementById('port-src').value, dstId=document.getElementById('port-dst').value;
+  const rep=document.getElementById('port-report'), pre=document.getElementById('port-preview');
+  PORT_STATE=null; pre.style.display='none';
+  const n=LAST_RENDER_LAYERS[0].bindings.length, srcB=KeymapPort.BOARDS[srcId];
+  if(srcB.total!==n){
+    rep.innerHTML=`<span class="pr-warn">⚠ This keymap has <b>${n}</b> bindings per layer but ${esc(srcB.label)} expects <b>${srcB.total}</b> - pick the matching source board.</span>`;
+    document.getElementById('port-dl').disabled=true; document.getElementById('port-open').disabled=true;
+    return;
+  }
+  if(srcId===dstId){
+    rep.innerHTML='Source and target are the same board - nothing to port.';
+    document.getElementById('port-dl').disabled=true; document.getElementById('port-open').disabled=true;
+    return;
+  }
+  const mapping=KeymapPort.makeMapping(srcId,dstId);
+  const layers=KeymapPort.portLayers(LAST_RENDER_LAYERS,mapping,'&trans');
+  // enrich parsed combos with timeout/idle straight from the source text
+  const meta=new Map(KeymapDoctor._internal.childBlocks(KeymapDoctor._internal.stripComments(LAST_RENDER_TEXT),'combos')
+    .map(c=>[c.name,{timeout:(c.body.match(/timeout-ms\s*=\s*<(\d+)>/)||[])[1],
+                     idle:(c.body.match(/require-prior-idle-ms\s*=\s*<(\d+)>/)||[])[1]}]));
+  const combos=LAST_RENDER_COMBOS.map(c=>Object.assign({},c,{
+    timeout:meta.get(c.name)&&meta.get(c.name).timeout?+meta.get(c.name).timeout:null,
+    idle:meta.get(c.name)&&meta.get(c.name).idle?+meta.get(c.name).idle:null}));
+  const pc=KeymapPort.portCombos(combos,mapping);
+  const text=KeymapPort.generateKeymap({layers,combos:pc.kept,srcText:document.getElementById('inp').value,mapping});
+  PORT_STATE={text,mapping,pc};
+  const droppedDesc=mapping.dropped.map(p=>{
+    const b=String(LAST_RENDER_LAYERS[0].bindings[p]||'').trim();
+    return `${p} (${b||'?'})`;
+  });
+  rep.innerHTML=
+    `<div class="pr-good">✓ ${mapping.dstFromSrc.filter(x=>x!=null).length} keys mapped by physical role (hand · row · column-from-inner; thumbs from the inner position).</div>`
+    +(mapping.dropped.length?`<div class="pr-warn">⚠ ${mapping.dropped.length} source keys have no home on the target and were dropped: ${esc(droppedDesc.join(', '))}</div>`:'')
+    +(mapping.unfilled.length?`<div>· ${mapping.unfilled.length} new target keys filled with <code>&trans</code> (positions ${mapping.unfilled.join(', ')}).</div>`:'')
+    +(pc.dropped.length?`<div class="pr-warn">⚠ Combos dropped (they touch removed keys): ${esc(pc.dropped.map(c=>c.name).join(', '))}</div>`:'')
+    +(pc.kept.length?`<div>· ${pc.kept.length} combos carried over with remapped positions.</div>`:'')
+    +'<div>· Behaviours and macros copied verbatim (they are position-independent).</div>';
+  pre.textContent=text; pre.style.display='';
+  document.getElementById('port-dl').disabled=false; document.getElementById('port-open').disabled=false;
+}
+function portApply(){
+  if(!PORT_STATE) return;
+  document.getElementById('inp').value=PORT_STATE.text;
+  LOADED_SRC=null; FILE_HANDLE=null; EDIT_HISTORY=null; ACTIVE_LAYER=0;
+  closePort(); render();
+}
+function portDownload(){
+  if(!PORT_STATE) return;
+  dlBlob(new Blob([PORT_STATE.text],{type:'text/plain'}),'ported.keymap');
+}
+
+// Share / permalinks / embed
+function shareOrigin(){
+  if(location.protocol==='http:'||location.protocol==='https:')
+    return location.origin+location.pathname.replace(/index\.html$/,'');
+  return 'https://customkeymap.com/';
+}
+function shareParams(){
+  if(!LOADED_SRC) return null;
+  const s=LOADED_SRC, p=new URLSearchParams();
+  p.set('load', `https://raw.githubusercontent.com/${s.owner}/${s.repo}/${s.branch}/${s.path}`);
+  if(LAYER_VIEW==='single'){ p.set('view','single'); p.set('layer', String(ACTIVE_LAYER)); }
+  if(BOARD_FULL) p.set('board','full');
+  return p;
+}
+function updatePermalink(){
+  if(!(location.protocol==='http:'||location.protocol==='https:')) return;
+  try{
+    const p=shareParams();
+    const keep=new URLSearchParams(location.search).get('embed')==='1' ? '&embed=1' : '';
+    history.replaceState(null,'', p ? (location.pathname+'?'+p.toString()+keep) : location.pathname);
+  }catch(e){}
+}
+function openShare(){
+  const ok=!!LOADED_SRC;
+  document.getElementById('share-unavailable').style.display=ok?'none':'';
+  document.getElementById('share-avail').style.display=ok?'':'none';
+  if(ok){
+    const link=shareOrigin()+'?'+shareParams().toString();
+    document.getElementById('share-link').value=link;
+    document.getElementById('share-md').value=`[${LOADED_SRC.owner}/${LOADED_SRC.repo} keymap - rendered on customkeymap](${link})`;
+    document.getElementById('share-embed').value=
+      `<iframe src="${link}&embed=1" style="width:100%;height:560px;border:1px solid #ddd;border-radius:12px" loading="lazy" title="ZMK keymap"></iframe>`;
+  }
+  document.getElementById('sharemodal').classList.add('on');
+}
+function closeShare(){ document.getElementById('sharemodal').classList.remove('on'); }
+function copyShare(id, btn){
+  const el=document.getElementById(id); el.select();
+  const done=()=>{ const t=btn.textContent; btn.textContent='✓ Copied'; setTimeout(()=>btn.textContent=t,1200); };
+  try{ navigator.clipboard.writeText(el.value).then(done,()=>{ document.execCommand('copy'); done(); }); }
+  catch(e){ document.execCommand('copy'); done(); }
+}
+
+// Build and fetch firmware
+var BUILD_STATE=null;
+function openBuild(){
+  if(!LOADED_SRC){ alert('Build works on a keymap loaded from a GitHub repo.'); return; }
+  document.getElementById('build-target').innerHTML=
+    'Repo <b>'+esc(LOADED_SRC.owner+'/'+LOADED_SRC.repo)+'</b> · branch <code>'+esc(LOADED_SRC.branch)+'</code>';
+  document.getElementById('build-status').innerHTML=ghStoredToken()
+    ? 'Signed in to GitHub.' : 'You’ll be asked to sign in to GitHub (Actions need repo access).';
+  document.getElementById('build-arts').innerHTML='';
+  const log=document.getElementById('build-log'); log.style.display='none'; log.innerHTML='';
+  document.getElementById('build-go').disabled=false;
+  document.getElementById('buildmodal').classList.add('on');
+}
+function closeBuild(){ document.getElementById('buildmodal').classList.remove('on'); if(BUILD_STATE) BUILD_STATE.stop=true; }
+function blog(m,cls){ const el=document.getElementById('build-log'); el.style.display='block';
+  const d=document.createElement('div'); if(cls)d.className=cls; d.textContent=m; el.appendChild(d); el.scrollTop=el.scrollHeight; }
+function bstatus(h){ document.getElementById('build-status').innerHTML=h; }
+function bsleep(ms){ return new Promise(r=>setTimeout(r,ms)); }
+async function buildFire(){
+  const s=LOADED_SRC; if(!s) return;
+  const go=document.getElementById('build-go'); go.disabled=true;
+  BUILD_STATE={stop:false};
+  try{
+    if(!ghStoredToken()){ bstatus('<span class="spinner"></span>Opening GitHub sign-in…'); await ghConnect('repo'); }
+    bstatus('<span class="spinner"></span>Finding the build workflow…');
+    const wfR=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/workflows`);
+    if(wfR.status===401){ ghDisconnect(); throw new Error('Session expired - click Build to sign in again.'); }
+    if(!wfR.ok) throw new Error('Couldn’t list workflows (HTTP '+wfR.status+').');
+    const wfs=(await wfR.json()).workflows||[];
+    const wf=wfs.find(w=>/build\.ya?ml$/.test(w.path))||wfs.find(w=>/build/i.test(w.name))||wfs[0];
+    if(!wf) throw new Error('This repo has no GitHub Actions workflow.');
+    blog('workflow: '+wf.path);
+    const t0=Date.now();
+    bstatus('<span class="spinner"></span>Dispatching '+esc(wf.name)+' on '+esc(s.branch)+'…');
+    const disp=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/workflows/${wf.id}/dispatches`,
+      {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({ref:s.branch})});
+    if(disp.status!==204){
+      const err=await disp.json().catch(()=>({}));
+      if(disp.status===422) throw new Error('That workflow has no workflow_dispatch trigger. One-line fix: add `workflow_dispatch:` under `on:` in '+wf.path+', commit, retry.');
+      throw new Error('Dispatch failed: HTTP '+disp.status+(err.message?' - '+err.message:''));
+    }
+    blog('dispatched ✓','ok');
+    bstatus('<span class="spinner"></span>Waiting for the run to appear…');
+    let run=null;
+    for(let i=0;i<20 && !BUILD_STATE.stop;i++){
+      await bsleep(3000);
+      const rr=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/runs?event=workflow_dispatch&branch=${encodeURIComponent(s.branch)}&per_page=1`);
+      if(rr.ok){
+        const runs=(await rr.json()).workflow_runs||[];
+        if(runs[0] && new Date(runs[0].created_at).getTime()>=t0-60000){ run=runs[0]; break; }
+      }
+    }
+    if(BUILD_STATE.stop) return;
+    if(!run) throw new Error('The run never appeared - check the repo’s Actions tab.');
+    blog('run #'+run.run_number+': '+run.html_url);
+    bstatus('<span class="spinner"></span>Building… <a target="_blank" rel="noopener" href="'+esc(run.html_url)+'">watch on GitHub</a>');
+    while(!BUILD_STATE.stop){
+      await bsleep(6000);
+      const rr=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/runs/${run.id}`);
+      if(!rr.ok) continue;
+      run=await rr.json();
+      if(run.status==='completed') break;
+    }
+    if(BUILD_STATE.stop) return;
+    if(run.conclusion!=='success') throw new Error('Build finished with: '+run.conclusion+' - logs are on the run page.');
+    blog('build succeeded ✓','ok');
+    bstatus('<span class="spinner"></span>Listing firmware artifacts…');
+    const ar=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/runs/${run.id}/artifacts`);
+    const arts=ar.ok?(await ar.json()).artifacts||[]:[];
+    if(!arts.length) throw new Error('The run produced no artifacts.');
+    const box=document.getElementById('build-arts'); box.innerHTML='';
+    for(const a of arts){
+      const row=document.createElement('div'); row.className='build-art';
+      const label=document.createElement('span'); label.innerHTML='<b>'+esc(a.name)+'</b> <span class="gh-hint">'+Math.round(a.size_in_bytes/1024)+' KB</span>';
+      const btn=document.createElement('button'); btn.className='btn-s'; btn.textContent='Download firmware';
+      btn.onclick=()=>fetchArtifact(s,a,btn);
+      row.appendChild(label); row.appendChild(btn); box.appendChild(row);
+    }
+    bstatus('✓ Build complete - firmware below. Flash = copy the .uf2 onto the half in bootloader mode.');
+  }catch(e){ bstatus('✗ '+esc(e.message||String(e))); }
+  finally{ go.disabled=false; }
+}
+async function fetchArtifact(s,a,btn){
+  btn.disabled=true; const orig=btn.textContent; btn.textContent='Fetching…';
+  try{
+    const r=await ghApi(`https://api.github.com/repos/${s.owner}/${s.repo}/actions/artifacts/${a.id}/zip`);
+    if(!r.ok) throw new Error('download HTTP '+r.status);
+    const files=await unzipAll(await r.arrayBuffer());
+    const uf2s=files.filter(f=>/\.uf2$/i.test(f.name));
+    const outs=uf2s.length?uf2s:files;
+    if(!outs.length) throw new Error('artifact zip was empty');
+    blog('artifact '+a.name+': '+files.map(f=>f.name).join(', '));
+    for(const f of outs) dlBlob(new Blob([f.data]),f.name.split('/').pop());
+    btn.textContent='✓ '+outs.length+' file'+(outs.length>1?'s':'');
+  }catch(e){ blog('✗ '+a.name+': '+(e.message||e),'bad'); btn.textContent=orig; btn.disabled=false; }
+}
+// Minimal zip reader (stored + deflate entries), enough for Actions artifacts,
+// no dependency needed: deflate goes through the browser's DecompressionStream.
+async function unzipAll(buf){
+  const dv=new DataView(buf), u8=new Uint8Array(buf);
+  let eocd=-1;
+  for(let i=buf.byteLength-22;i>=Math.max(0,buf.byteLength-22-65536);i--){
+    if(dv.getUint32(i,true)===0x06054b50){ eocd=i; break; }
+  }
+  if(eocd<0) throw new Error('not a zip file');
+  const count=dv.getUint16(eocd+10,true);
+  let off=dv.getUint32(eocd+16,true);
+  const files=[];
+  for(let n=0;n<count;n++){
+    if(dv.getUint32(off,true)!==0x02014b50) break;
+    const method=dv.getUint16(off+10,true), csize=dv.getUint32(off+20,true);
+    const nameLen=dv.getUint16(off+28,true), extraLen=dv.getUint16(off+30,true), cmtLen=dv.getUint16(off+32,true);
+    const lho=dv.getUint32(off+42,true);
+    const name=new TextDecoder().decode(u8.subarray(off+46,off+46+nameLen));
+    const lNameLen=dv.getUint16(lho+26,true), lExtraLen=dv.getUint16(lho+28,true);
+    const dataStart=lho+30+lNameLen+lExtraLen;
+    const cdata=u8.subarray(dataStart,dataStart+csize);
+    if(!name.endsWith('/')){
+      let data;
+      if(method===0) data=cdata.slice();
+      else if(method===8){
+        const resp=new Response(new Blob([cdata]).stream().pipeThrough(new DecompressionStream('deflate-raw')));
+        data=new Uint8Array(await resp.arrayBuffer());
+      } else throw new Error('unsupported zip method '+method);
+      files.push({name,data});
+    }
+    off+=46+nameLen+extraLen+cmtLen;
+  }
+  return files;
 }
 
 // ── Export ───────────────────────────────────────────────────────────────────
@@ -2298,7 +2695,7 @@ function parseGitHubInput(s){
     const owner=m[1], repo=m[2], rest=m[3]||'';
     let f = rest.match(/^\/(?:blob|raw)\/(.+)$/);        // a specific file
     if(f) return {kind:'file', urls:[`https://raw.githubusercontent.com/${owner}/${repo}/${f[1]}`]};
-    let t = rest.match(/^\/tree\/(.+)$/);   // branch (+ maybe subdir) — ambiguous (branch names can contain /), resolved against real branches at load time
+    let t = rest.match(/^\/tree\/(.+)$/);   // branch (+ maybe subdir) - ambiguous (branch names can contain /), resolved against real branches at load time
     if(t) return {kind:'repo', owner, repo, branch:null, subdir:'', treePath:t[1]};
     return {kind:'repo', owner, repo, branch:null, subdir:''};  // bare repo URL
   }
@@ -2316,7 +2713,7 @@ function parseGitHubInput(s){
   if(parts.length === 1) return {kind:'owner', owner:parts[0]};  // bare "owner" -> owner-wide
   if(parts.length < 2) return null;
   const owner=parts[0], repo=parts[1], path=parts.slice(2).join('/');
-  // owner/repo/tree/<branch>[/subdir] shorthand — mirrors the github.com URL path.
+  // owner/repo/tree/<branch>[/subdir] shorthand - mirrors the github.com URL path.
   // treePath is ambiguous (branch may contain /); resolved against real branches at load.
   if(!branch && parts[2]==='tree' && parts.length>=4){
     return {kind:'repo', owner, repo, branch:null, subdir:'', treePath: parts.slice(3).join('/')};
@@ -2381,7 +2778,7 @@ function fillKeymapSelect(items){
 
 // Resolve an ambiguous "branch[/subdir]" tree path (from a /tree/<…> URL or
 // owner/repo/tree/<…> shorthand) against a repo's real branch names. Branch names
-// can contain slashes (feat/x), so we can't just split on the first slash — pick the
+// can contain slashes (feat/x), so we can't just split on the first slash - pick the
 // LONGEST branch name that matches a leading path-segment prefix. Returns
 // {branch, sha, subdir} or null if nothing matches.
 function matchBranchPrefix(treePath, branches){
@@ -2415,7 +2812,7 @@ async function discoverAndLoad(ref){
   let treeRef = branch;            // what we fetch the tree by: a branch name, or a commit SHA for slash-containing branches
   if(!branch && ref.treePath){
     if(ref.treePath.indexOf('/') < 0){
-      branch = treeRef = ref.treePath;            // single-segment branch — unambiguous, no extra API call
+      branch = treeRef = ref.treePath;            // single-segment branch - unambiguous, no extra API call
     } else {
       const m = matchBranchPrefix(ref.treePath, await fetchRepoBranches(ref.owner, ref.repo));
       if(m){ branch = m.branch; subdir = m.subdir; treeRef = m.sha; }   // SHA avoids a slash-in-URL on the trees API
@@ -3460,7 +3857,7 @@ function closeGlossary(){ document.getElementById('glossmodal').classList.remove
             render();
             try{ setStatus('ok','✓ Layout from '+f.name+' applied ('+counts+' keys)'); }catch(_){}
           } else {
-            try{ setStatus('ok','✓ Layout '+f.name+' ready ('+counts+' keys) — now paste or drop a .keymap'); }catch(_){}
+            try{ setStatus('ok','✓ Layout '+f.name+' ready ('+counts+' keys) - now paste or drop a .keymap'); }catch(_){}
           }
           return;
         }
@@ -3544,12 +3941,12 @@ function removeComboUI(ci){
 function addConditionalLayerUI(){
   if(!EDIT_MODEL){ alert('Render a keymap first.'); return; }
   const n = LAYER_COUNT || KeymapEngine.parseKeymap(EDIT_MODEL.text).layers.length;
-  const ifRaw = prompt(`Which layers must be held together to trigger this?\nEnter 2 or more layer numbers, separated by spaces (0–${n-1}):`);
+  const ifRaw = prompt(`Which layers must be held together to trigger this?\nEnter 2 or more layer numbers, separated by spaces (0-${n-1}):`);
   if(ifRaw==null) return;
   const ifLayers = ifRaw.trim().split(/\s+/).map(Number).filter(x=>!isNaN(x));
   if(ifLayers.length<2){ alert('Enter at least two layer numbers, e.g. "1 2".'); return; }
   if(ifLayers.some(x=>x<0||x>=n)){ alert(`Layer numbers must be between 0 and ${n-1}.`); return; }
-  const thenRaw = prompt(`Which layer should activate when those are all held? (0–${n-1})`);
+  const thenRaw = prompt(`Which layer should activate when those are all held? (0-${n-1})`);
   if(thenRaw==null) return;
   const thenLayer = parseInt((thenRaw||'').trim(),10);
   if(isNaN(thenLayer)||thenLayer<0||thenLayer>=n){ alert(`Target layer must be between 0 and ${n-1}.`); return; }
@@ -3607,12 +4004,27 @@ function createNewKeymap(){
   closeNewKeymap(); render();
 }
 
+// Permalink boot: ?load=...&view=...&layer=...&board=...&embed=1
+(function(){
+  let q; try{ q=new URLSearchParams(location.search); }catch(e){ return; }
+  if(q.get('embed')==='1') document.body.classList.add('embed');
+  if(q.get('view')==='single') LAYER_VIEW='single';
+  const ly=parseInt(q.get('layer')||'',10); if(!isNaN(ly)&&ly>=0) ACTIVE_LAYER=ly;
+  if(q.get('board')==='full'){ BOARD_FULL=true; BOARD_USER_SET=true; }
+  const load=q.get('load');
+  if(load){
+    const el=document.getElementById('gh-input');
+    if(el) el.value=load;
+    loadFromGitHub();
+  }
+})();
+
 // Close modals on backdrop click or Escape.
 (function(){
-  const closers = {kemodal:closeKeyEditor, bemodal:closeBehaviorEditor, nmodal:closeNewKeymap, glossmodal:closeGlossary};
+  const closers = {kemodal:closeKeyEditor, bemodal:closeBehaviorEditor, nmodal:closeNewKeymap, glossmodal:closeGlossary, doctormodal:closeDoctor, sharemodal:closeShare, portmodal:closePort, buildmodal:closeBuild};
   Object.keys(closers).forEach(id=>{ const bg=document.getElementById(id);
     if(bg) bg.addEventListener('click', e=>{ if(e.target===bg) closers[id](); }); });
-  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeKeyEditor(); closeBehaviorEditor(); closeNewKeymap(); closeGlossary(); cancelComboBuild(); } });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeKeyEditor(); closeBehaviorEditor(); closeNewKeymap(); closeGlossary(); cancelComboBuild(); closeDoctor(); closeShare(); closePort(); closeBuild(); } });
 })();
 
 // Prefill the GitHub field with the last-used URL (or the Corne default).

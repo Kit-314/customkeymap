@@ -121,5 +121,5 @@ function mockDriver(turns) {
   try { await AI.listModels({ provider: 'anthropic', apiKey: 'bad', fetch: async () => ({ ok: false, status: 401, async text() { return 'unauthorized'; } }) }); } catch (e) { threw = /401/.test(e.message); }
   ok(threw, 'listModels throws on non-ok response');
 
-  console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+  console.log(`\nALL ${pass} ASSERTIONS PASSED`);
 })();

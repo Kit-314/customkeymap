@@ -56,4 +56,4 @@ ok(E.conditionalNameError(m, 'tri'), 'duplicate name rejected');
 ok(E.conditionalNameError(m, '9bad'), 'invalid name rejected');
 eq(E.conditionalNameError(m, 'fresh'), null, 'fresh valid name accepted');
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

@@ -12,8 +12,8 @@ const path = require('path');
 const html = fs.readFileSync(path.join(__dirname, '..', 'index.html'), 'utf8');
 
 // Pull a top-level `function NAME(...) { ... }` out of index.html by brace-counting.
-// (Both target functions contain only balanced braces — object literals and ${} in
-// template strings — so naive counting is safe here.)
+// (Both target functions contain only balanced braces - object literals and ${} in
+// template strings - so naive counting is safe here.)
 function extractFn(src, name) {
   const start = src.indexOf('function ' + name + '(');
   if (start < 0) throw new Error('function not found: ' + name);

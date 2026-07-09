@@ -7,7 +7,7 @@ const ok = (cond, msg) => { assert.ok(cond, msg); console.log('  ✓ ' + msg); p
 const eq = (a, b, msg) => { assert.strictEqual(a, b, `${msg}\n   expected: ${JSON.stringify(b)}\n   got:      ${JSON.stringify(a)}`); console.log('  ✓ ' + msg); pass++; };
 
 // A realistic raw .keymap: includes, a mod-morph in behaviors{}, a combo, and
-// two layers. Note the line comment containing "&kp NOPE" — it must NOT be
+// two layers. Note the line comment containing "&kp NOPE" - it must NOT be
 // tokenised as a real binding (comment-awareness).
 const SRC = `#include <behaviors.dtsi>
 #include <dt-bindings/zmk/keys.h>
@@ -104,4 +104,4 @@ eq(h.undo(), SRC, 'undo returns the original text');
 ok(h.canRedo(), 'can redo after undo');
 eq(h.redo(), edited, 'redo returns the edited text');
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

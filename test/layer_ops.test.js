@@ -140,4 +140,4 @@ console.log('guards');
 assert.throws(() => E.deleteLayer(E.parseKeymap(`/ { keymap { compatible="zmk,keymap"; only { bindings = <&kp A>; }; }; };`), 0), /only layer/);
 console.log('  ✓ refuses to delete the only layer'); pass++;
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

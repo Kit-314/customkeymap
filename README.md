@@ -60,7 +60,7 @@ should be able to see exactly what it does - here, you can.
 
 - Load from GitHub by pasting an owner, `owner/repo`, or a direct `.keymap` link.
   To target a branch, use `owner/repo@branch`, `owner/repo/tree/branch`, or paste a
-  `github.com/owner/repo/tree/branch` URL — branch names with slashes (e.g. `feat/x`) work.
+  `github.com/owner/repo/tree/branch` URL - branch names with slashes (e.g. `feat/x`) work.
 - Resolve `#include`s and expand C-preprocessor templates, so template-driven configs
   still render.
 - Parse the keymap's `behaviors {}` block, so custom mod-taps, layer-taps, mod-morphs and

@@ -65,4 +65,4 @@ ok(ap.keymap && ap.layers[2].nodeEnd <= ap.keymap.contentEnd + 200, 'new layer i
 assert.throws(()=>E.addLayer(m,'base_layer'), /already exists/); console.log('  ✓ adding a duplicate name throws'); pass++;
 assert.throws(()=>E.addLayer(m,'has space'), /must be/); console.log('  ✓ adding an invalid name throws'); pass++;
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

@@ -10,7 +10,7 @@ ok(C.KEYCODES.every(k => k.code && k.label && k.cat), 'every entry has code + la
 const codes = C.KEYCODES.map(k => k.code);
 eq(new Set(codes).size, codes.length, 'no duplicate codes');
 eq(C.KEYCODES.filter(k => k.cat === 'Letters').length, 26, '26 letters');
-eq(C.KEYCODES.filter(k => k.cat === 'Function').length, 24, 'F1–F24');
+eq(C.KEYCODES.filter(k => k.cat === 'Function').length, 24, 'F1-F24');
 eq(C.byCode.get('SEMI').label, ';', 'SEMI maps to ";"');
 eq(C.byCode.get('DOT').label, '.', 'DOT maps to "."');
 
@@ -23,4 +23,4 @@ ok(C.search('A', 3).some(k => k.code === 'A'), 'search "A" includes the A key');
 eq(C.MODIFIERS.length, 8, '8 modifiers (L/R × shift/ctrl/alt/gui)');
 ok(C.MODIFIERS.find(m => m.code === 'LGUI'), 'LGUI modifier present');
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);

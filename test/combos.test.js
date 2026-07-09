@@ -67,4 +67,4 @@ ok(E.comboNameError(m, 'c_esc'), 'duplicate combo name rejected');
 ok(E.comboNameError(m, '9bad'), 'invalid combo name rejected');
 eq(E.comboNameError(m, 'c_new'), null, 'fresh valid name accepted');
 
-console.log(`\nALL ${pass} ASSERTIONS PASSED ✅`);
+console.log(`\nALL ${pass} ASSERTIONS PASSED`);
