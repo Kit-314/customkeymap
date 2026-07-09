@@ -19,7 +19,7 @@
       leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24]],
       rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29]],
       leftThumb:[30,31], rightThumb:[32,33] },
-    corne36: { label:'36-key split (Corne 36)', total:36,
+    corne36: { label:'Corne 5-column (36)', total:36,
       leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24]],
       rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29]],
       leftThumb:[30,31,32], rightThumb:[33,34,35] },
@@ -27,37 +27,144 @@
       leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29]],
       rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35]],
       leftThumb:[36,37,38], rightThumb:[39,40,41] },
-    corne43: { label:'Corne (43, spec layout)', total:43,
+    corne43: { label:'Corne spec layout (43)', total:43,
       leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29]],
       rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35]],
       leftThumb:[37,38,39], rightThumb:[40,41,42] },
-    ergoquill38: { label:'ErgoQuill (38)', total:38,
+    ergoquill38: { label:'ErgoQuill (38)', total:38, hidden:true, // not publicly available yet
       leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24]],
       rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29]],
       // L thumbs reading order: above_mid, outer, mid, inner / R: inner, mid, outer, above_mid
       leftThumb:[30,31,32,33], rightThumb:[34,35,36,37],
       // above_mid is an EXTRA role, not part of the inner to outer run
       leftThumbExtra:[30], rightThumbExtra:[37] },
-    ergoquill37: { label:'ErgoQuill Joy (37)', total:37,
+    ergoquill37: { label:'ErgoQuill Joy (37)', total:37, hidden:true,
       leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24]],
       rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29]],
       leftThumb:[30,31,32], rightThumb:[33,34,35,36],
       rightThumbExtra:[36] },
+    // Entries below were derived from each board's canonical firmware definition
+    // (ZMK in-tree shield, vendor ZMK config, or the vendor's QMK layout where no
+    // ZMK one exists) and cross-checked against the matrix transform. Positions
+    // are binding-order indices of the board's standard keymap.
+    chocofi36: { label:'Chocofi (36)', total:36,
+      // runs the corne shield's five_column_transform, so binding order is
+      // identical to a 36-key 5-column Corne
+      leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24]],
+      rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29]],
+      leftThumb:[30,31,32], rightThumb:[33,34,35] },
+    totem38: { label:'Totem (38)', total:38,
+      // extra outer pinky key per half sits at the outer end of row 2
+      leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24,25]],
+      rightRows:[[5,6,7,8,9],[15,16,17,18,19],[26,27,28,29,30,31]],
+      leftThumb:[32,33,34], rightThumb:[35,36,37] },
+    reviung41: { label:'Reviung41 (41)', total:41,
+      // unibody: index 38 is the single shared center thumb key
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35]],
+      leftThumb:[36,37], rightThumb:[39,40], leftThumbExtra:[38] },
+    piantor: { label:'Piantor (42)', total:42,
+      // beekeeb's official layout is LAYOUT_split_3x6_3, binding order
+      // identical to Corne 42
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35]],
+      leftThumb:[36,37,38], rightThumb:[39,40,41] },
+    kyria50: { label:'Kyria (50)', total:50,
+      // the four inner keys inboard of B/N (30,31 left; 32,33 right) are kept
+      // out of row 2 so the alpha columns line up with other boards
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[34,35,36,37,38,39]],
+      leftThumb:[40,41,42,43,44], rightThumb:[45,46,47,48,49],
+      leftThumbExtra:[30,31], rightThumbExtra:[32,33] },
+    lily58: { label:'Lily58 (58)', total:58, homeRow:2,
+      // 42/43 are the inner pair between the hands on row 3
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29],[36,37,38,39,40,41]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35],[44,45,46,47,48,49]],
+      leftThumb:[50,51,52,53], rightThumb:[54,55,56,57],
+      leftThumbExtra:[42], rightThumbExtra:[43] },
+    sofle: { label:'Sofle (60)', total:60, homeRow:2,
+      // same finger grid as Lily58 with 5 thumbs per side; 42/43 inner pair
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29],[36,37,38,39,40,41]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35],[44,45,46,47,48,49]],
+      leftThumb:[50,51,52,53,54], rightThumb:[55,56,57,58,59],
+      leftThumbExtra:[42], rightThumbExtra:[43] },
+    adv360pro: { label:'Advantage360 Pro (76)', total:76, homeRow:2,
+      // rows 0-2 include the inner mod-column key; the thumb home row (the
+      // keys the thumbs rest on per Kinesis) is primary, upper mods plus the
+      // bottom key are extras
+      leftRows:[[0,1,2,3,4,5,6],[14,15,16,17,18,19,20],[28,29,30,31,32,33,34],[46,47,48,49,50,51],[60,61,62,63,64]],
+      rightRows:[[7,8,9,10,11,12,13],[21,22,23,24,25,26,27],[39,40,41,42,43,44,45],[54,55,56,57,58,59],[71,72,73,74,75]],
+      leftThumb:[65,66,52], leftThumbExtra:[35,36,67],
+      rightThumb:[53,69,70], rightThumbExtra:[37,38,68] },
+    glove80: { label:'Glove80 (80)', total:80, homeRow:3,
+      // lower thumb row is the home row (Backspace/Enter/Space), upper
+      // modifier row goes in extras
+      leftRows:[[0,1,2,3,4],[10,11,12,13,14,15],[22,23,24,25,26,27],[34,35,36,37,38,39],[46,47,48,49,50,51],[64,65,66,67,68]],
+      rightRows:[[5,6,7,8,9],[16,17,18,19,20,21],[28,29,30,31,32,33],[40,41,42,43,44,45],[58,59,60,61,62,63],[75,76,77,78,79]],
+      leftThumb:[69,70,71], leftThumbExtra:[52,53,54],
+      rightThumb:[72,73,74], rightThumbExtra:[55,56,57] },
+    klor44: { label:'KLOR (44)', total:44,
+      // one entry covers ALL KLOR forms: ZMK ships a single 44-position
+      // transform and the trimmed builds (Konrad 42, Yubitsume 40,
+      // Saegewerk 38) leave their absent keys as &none in the same order.
+      // 28/29 are the two center keys inboard of the index columns.
+      leftRows:[[0,1,2,3,4],[10,11,12,13,14,15],[22,23,24,25,26,27]],
+      rightRows:[[5,6,7,8,9],[16,17,18,19,20,21],[30,31,32,33,34,35]],
+      leftThumb:[36,37,38,39], rightThumb:[40,41,42,43],
+      leftThumbExtra:[28], rightThumbExtra:[29] },
+    // Dactyl family: no in-tree ZMK shields exist, so binding order comes from
+    // the QMK in-tree LAYOUT definitions (same approach as the Piantor). The
+    // Manuform's 2-key inner droop is a short bottom row; the two big
+    // thumb-home caps are primary and the 2x2 secondary block is extras.
+    dactylManuform4x5: { label:'Dactyl Manuform 4x5 (46)', total:46,
+      leftRows:[[0,1,2,3,4],[10,11,12,13,14],[20,21,22,23,24],[30,31]],
+      rightRows:[[5,6,7,8,9],[15,16,17,18,19],[25,26,27,28,29],[32,33]],
+      leftThumb:[34,35], rightThumb:[36,37],
+      leftThumbExtra:[38,39,42,43], rightThumbExtra:[40,41,44,45] },
+    dactylManuform4x6: { label:'Dactyl Manuform 4x6 (52)', total:52,
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29],[36,37]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35],[38,39]],
+      leftThumb:[40,41], rightThumb:[42,43],
+      leftThumbExtra:[44,45,48,49], rightThumbExtra:[46,47,50,51] },
+    dactylManuform5x6: { label:'Dactyl Manuform 5x6 (64)', total:64, homeRow:2,
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29],[36,37,38,39,40,41],[48,49]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35],[42,43,44,45,46,47],[50,51]],
+      leftThumb:[52,53], rightThumb:[54,55],
+      leftThumbExtra:[56,57,60,61], rightThumbExtra:[58,59,62,63] },
+    dactylManuform6x6: { label:'Dactyl Manuform 6x6 (76)', total:76, homeRow:3,
+      leftRows:[[0,1,2,3,4,5],[12,13,14,15,16,17],[24,25,26,27,28,29],[36,37,38,39,40,41],[48,49,50,51,52,53],[60,61]],
+      rightRows:[[6,7,8,9,10,11],[18,19,20,21,22,23],[30,31,32,33,34,35],[42,43,44,45,46,47],[54,55,56,57,58,59],[62,63]],
+      leftThumb:[64,65], rightThumb:[66,67],
+      leftThumbExtra:[68,69,72,73], rightThumbExtra:[70,71,74,75] },
+    dactyl70: { label:'Dactyl (70)', total:70, homeRow:2,
+      // original Dactyl: LAYOUT lists the whole left hand then the whole
+      // right hand (not row-interleaved); y4 partial rows drop the INNER
+      // column, so the left one is outer-aligned
+      leftRows:[[0,1,2,3,4,5],[6,7,8,9,10,11],[12,13,14,15,16,17],[18,19,20,21,22,23],[24,25,26,27,28]],
+      rightRows:[[35,36,37,38,39,40],[41,42,43,44,45,46],[47,48,49,50,51,52],[53,54,55,56,57,58],[59,60,61,62,63]],
+      leftThumb:[32,33], rightThumb:[68,69],
+      leftThumbExtra:[29,30,31,34], rightThumbExtra:[64,65,66,67] },
   };
 
   // role string for every position of a board: 'L:r1:c2' (c counted from INNER,
   // so col roles line up between 5-col and 6-col boards), 'LT:0' (thumb, 0 =
   // innermost), 'LTX:0' (extra thumb such as ErgoQuill's above-mid).
+  // Rows are anchored at the HOME row (board.homeRow, default 1 for the classic
+  // 3-row boards), not the top row: boards with number or function rows above
+  // the alphas (Lily58, Glove80, ...) must still land QWERTY on QWERTY when
+  // ported to a 3-row board. Row roles are therefore offsets from home and can
+  // be negative (rows above home) or positive (rows below).
   function roleMap(board){
     const roles = new Map(); // role -> position
     const place = (role,pos)=>{ if(!roles.has(role)) roles.set(role,pos); };
+    const home = board.homeRow!=null ? board.homeRow : 1;
     board.leftRows.forEach((row,r)=>{
       // left rows are OUTER to INNER in reading order: inner col = last element
-      row.slice().reverse().forEach((pos,cFromInner)=>place(`L:${r}:${cFromInner}`,pos));
+      row.slice().reverse().forEach((pos,cFromInner)=>place(`L:${r-home}:${cFromInner}`,pos));
     });
     board.rightRows.forEach((row,r)=>{
       // right rows are INNER to OUTER in reading order
-      row.forEach((pos,cFromInner)=>place(`R:${r}:${cFromInner}`,pos));
+      row.forEach((pos,cFromInner)=>place(`R:${r-home}:${cFromInner}`,pos));
     });
     const extras = new Set([...(board.leftThumbExtra||[]), ...(board.rightThumbExtra||[])]);
     const lt=(board.leftThumb||[]).filter(p=>!extras.has(p));

@@ -67,4 +67,37 @@ console.log('keymap generation:');
   eq((kmPart.match(/&trans/g) || []).length, 2, 'two unfilled thumbs emitted as &trans');
 }
 
+// home-row anchoring: boards with number/function rows above the alphas must
+// still land QWERTY on QWERTY when ported to a 3-row board, and vice versa.
+console.log('home-row anchoring across different row counts:');
+{
+  const m = P.makeMapping('corne42','glove80');
+  eq(m.dstFromSrc[34], 12, 'glove80 home row (ASDF) takes corne home row, not the number row');
+  eq(m.dstFromSrc[22], 0, 'glove80 QWERTY row takes corne top alpha row');
+  ok(m.dstFromSrc[10]==null && m.dstFromSrc[0]==null, 'glove80 number and function rows stay unfilled');
+  eq(m.dropped.length, 0, 'nothing from the corne is dropped going to the bigger board');
+  const m2 = P.makeMapping('lily58','corne42');
+  eq(m2.dstFromSrc[0], 12, 'corne top row takes lily58 QWERTY row, not its number row');
+  ok(m2.dropped.includes(0), 'lily58 number row is dropped and reported on a 3-row target');
+}
+
+// table invariants: every board entry must be structurally sound. This guards
+// hand-transcribed entries, since new boards are added by editing the table.
+console.log('board table invariants:');
+{
+  for (const [id, b] of Object.entries(P.BOARDS)) {
+    const rows = [...b.leftRows.flat(), ...b.rightRows.flat()];
+    const thumbs = [...(b.leftThumb||[]), ...(b.rightThumb||[])];
+    const extras = [...(b.leftThumbExtra||[]), ...(b.rightThumbExtra||[])];
+    const rowsAndThumbs = [...rows, ...thumbs];
+    eq(rowsAndThumbs.length, new Set(rowsAndThumbs).size, id + ': no duplicate positions across rows and thumbs');
+    const covered = new Set([...rowsAndThumbs, ...extras]);
+    ok([...covered].every(p => Number.isInteger(p) && p >= 0 && p < b.total), id + ': every position within 0..total-1');
+    ok(thumbs.every(p => !rows.includes(p)), id + ': thumb positions never appear in rows');
+    const roles = P._internal.roleMap(b);
+    eq(roles.size, covered.size, id + ': exactly one role per covered position');
+    ok(/\(\d+\)$/.test(b.label) && String(b.total) === b.label.match(/\((\d+)\)$/)[1], id + ': label key count matches total');
+  }
+}
+
 console.log(`\nAll ${pass} port tests passed.`);

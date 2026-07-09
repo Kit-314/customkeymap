@@ -2274,13 +2274,13 @@ var PORT_STATE=null;
 function openPort(){
   if(!LAST_RENDER_LAYERS.length){ alert('Render a keymap first.'); return; }
   const n=LAST_RENDER_LAYERS[0].bindings.length;
-  const opts=Object.entries(KeymapPort.BOARDS)
-    .map(([id,b])=>`<option value="${id}">${esc(b.label)}</option>`).join('');
+  const visible=Object.entries(KeymapPort.BOARDS).filter(([,b])=>!b.hidden);
+  const opts=visible.map(([id,b])=>`<option value="${id}">${esc(b.label)}</option>`).join('');
   const srcSel=document.getElementById('port-src'), dstSel=document.getElementById('port-dst');
   srcSel.innerHTML=opts; dstSel.innerHTML=opts;
-  const guess=Object.entries(KeymapPort.BOARDS).find(([,b])=>b.total===n);
+  const guess=visible.find(([,b])=>b.total===n);
   if(guess) srcSel.value=guess[0];
-  dstSel.value=(guess && guess[0]!=='ergoquill38') ? 'ergoquill38' : 'corne36';
+  dstSel.value=(guess && guess[0]==='corne42') ? 'corne36' : 'corne42';
   portRecalc();
   document.getElementById('portmodal').classList.add('on');
 }
@@ -2290,6 +2290,10 @@ function portRecalc(){
   const rep=document.getElementById('port-report'), pre=document.getElementById('port-preview');
   PORT_STATE=null; pre.style.display='none';
   const n=LAST_RENDER_LAYERS[0].bindings.length, srcB=KeymapPort.BOARDS[srcId];
+  // several boards share a key count (e.g. Corne 42 and Piantor 42), so the
+  // auto-guessed source can be the wrong sibling while still looking valid
+  const twins=Object.values(KeymapPort.BOARDS).filter(b=>!b.hidden&&b.total===n).length;
+  const guessNote=twins>1?`<div>· ${twins} boards in this list have ${n} keys. Make sure the source board above is your actual keyboard.</div>`:'';
   if(srcB.total!==n){
     rep.innerHTML=`<span class="pr-warn">⚠ This keymap has <b>${n}</b> bindings per layer but ${esc(srcB.label)} expects <b>${srcB.total}</b> - pick the matching source board.</span>`;
     document.getElementById('port-dl').disabled=true; document.getElementById('port-open').disabled=true;
@@ -2322,7 +2326,8 @@ function portRecalc(){
     +(mapping.unfilled.length?`<div>· ${mapping.unfilled.length} new target keys filled with <code>&trans</code> (positions ${mapping.unfilled.join(', ')}).</div>`:'')
     +(pc.dropped.length?`<div class="pr-warn">⚠ Combos dropped (they touch removed keys): ${esc(pc.dropped.map(c=>c.name).join(', '))}</div>`:'')
     +(pc.kept.length?`<div>· ${pc.kept.length} combos carried over with remapped positions.</div>`:'')
-    +'<div>· Behaviours and macros copied verbatim (they are position-independent).</div>';
+    +'<div>· Behaviours and macros copied verbatim (they are position-independent).</div>'
+    +guessNote;
   pre.textContent=text; pre.style.display='';
   document.getElementById('port-dl').disabled=false; document.getElementById('port-open').disabled=false;
 }
